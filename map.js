@@ -1,8 +1,10 @@
 import mapboxgl from 'https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
+// Set your Mapbox access token here
 mapboxgl.accessToken = 'pk.eyJ1IjoibWlwMDE0IiwiYSI6ImNtdzRkbHRjMDAxYzYyd29ub2N4MDJ3Nm4ifQ.y7yIzN0fLnj-tw9fifFKlQ';
 
+// Initialize the map
 const map = new mapboxgl.Map({
   container: 'map', // ID of the div where the map will render
   style: 'mapbox://styles/mapbox/streets-v12', // Map style
@@ -142,16 +144,20 @@ map.on('load', async () => {
     .domain([0, d3.max(stations, (d) => d.totalTraffic) || 0])
     .range([0, 25]);
 
+  let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
+
   const circles = svg
     .selectAll('circle')
     .data(stations, (d) => d.short_name)
     .enter()
     .append('circle')
     .attr('r', (d) => radiusScale(d.totalTraffic))
-    .style('fill', 'steelblue')
     .style('fill-opacity', 0.6)
     .style('stroke', 'white')
     .style('stroke-width', 1)
+    .style('--departure-ratio', (d) =>
+      stationFlow(d.departures / d.totalTraffic),
+    )
     .each(function (d) {
       d3.select(this)
         .append('title')
@@ -199,7 +205,10 @@ map.on('load', async () => {
     circles
       .data(filteredStations, (d) => d.short_name)
       .join('circle') // Ensure the data is bound correctly
-      .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
+      .attr('r', (d) => radiusScale(d.totalTraffic)) // Update circle sizes
+      .style('--departure-ratio', (d) =>
+        stationFlow(d.departures / d.totalTraffic),
+      );
   }
 
   timeSlider.addEventListener('input', updateTimeDisplay);
