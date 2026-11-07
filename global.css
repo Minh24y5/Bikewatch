@@ -8,3 +8,35 @@ body {
   margin: auto;
   padding: 1em;
 }
+
+header {
+  display: flex;
+  align-items: baseline;   
+  gap: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+header h1 {
+  margin: 0;
+}
+
+label {
+  margin-left: auto;       
+}
+
+label input {
+  vertical-align: middle;
+  width: 28em;
+}
+
+time,
+em {
+  display: block;         
+  text-align: right;
+}
+
+em {
+  color: gray;
+  font-style: italic;
+}
